@@ -9,9 +9,10 @@ for your
 
 `generateSpeechContext` takes two parameters:
 
-  - `summary`: An API.AI agent summary object with the keys `name`, `entities`, and `intents`, as
-    produced by [`api-ai-agent-downloader`](https://www.npmjs.com/package/api-ai-agent-downloader).
+  - `summary`: An API.AI agent summary object with the keys `name`, `entities`, and `intents`.*
   - `blacklist`: An array of words to blacklist from the context.
+
+* as produced by [`api-ai-agent-downloader`](https://www.npmjs.com/package/api-ai-agent-downloader).
 
 It returns an array containing words and phrases based on your agent's entities and intents.
 Non-blacklisted single words are given highest priority, then phrases that contain at least one
@@ -24,18 +25,19 @@ The array comports with the Google Cloud Speech API's SpeechContext
 
 ```js
 const agentDownloader = require('api-ai-agent-downloader');
-const { generateSpeechContext, MOST_COMMON_10K_WORDS } = require('api-ai-speech-context');
+const { generateSpeechContext } = require('api-ai-speech-context');
 const fs = require('fs');
 
 const agentName = 'agent_foo';
 const developerToken = 'abc123';
-const blacklist = MOST_COMMON_10K_WORDS.concat(['more', 'bad', 'words']);
+
+const blacklist = ['bad', 'words', 'and phrases'];
+const removeCommonWords = true;  // true by default
 
 agentDownloader.getSummary(agentName, developerToken)
     .then(summary => {
-      fs.writeFileSync(path, JSON.stringify(summary));
-      return generateSpeechContext(summary, blacklist);
+      const context = generateSpeechContext(summary, blacklist, removeCommonWords);
+      fs.writeFileSync('./speechContext.json', JSON.stringify(context));
     })
-    .then(context => fs.writeFileSync('./speechContext.json', JSON.stringify(context)))
     .catch(error => console.error(error));
 ```
