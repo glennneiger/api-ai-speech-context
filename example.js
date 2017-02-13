@@ -1,7 +1,7 @@
 const fs = require('fs');
 const agentDownloader = require('api-ai-agent-downloader');
 
-const { MOST_COMMON_10K_WORDS, generateSpeechContext } = require('./index');
+const { generateSpeechContext } = require('./index');
 
 
 // Retrieves the agent's API.AI summary, using a saved local copy, if any.
@@ -20,7 +20,7 @@ const getAgentSummaryPromise = (agentName, developerToken) => {
 
 const agentName = 'agent_foo';
 const developerToken = 'abc123';
-const blacklist = MOST_COMMON_10K_WORDS.concat(['more', 'bad', 'words']);
+const blacklist = ['bad', 'words', 'and phrases'];
 
 getAgentSummaryPromise(agentName, developerToken)
     .then(summary => {
