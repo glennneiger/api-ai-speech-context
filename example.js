@@ -21,10 +21,11 @@ const getAgentSummaryPromise = (agentName, developerToken) => {
 const agentName = 'agent_foo';
 const developerToken = 'abc123';
 const blacklist = ['bad', 'words', 'and phrases'];
+const removeCommonWords = true;  // true by default
 
 getAgentSummaryPromise(agentName, developerToken)
     .then(summary => {
-      const context = generateSpeechContext(summary, blacklist);
+      const context = generateSpeechContext(summary, blacklist, removeCommonWords);
       console.log(`=> Generated speech context for ${agentName}.`);
       fs.writeFileSync('./speechContext.json', JSON.stringify(context));
     })

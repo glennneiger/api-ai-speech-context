@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const commonWordsFile = fs.readFileSync('./data/mostCommonWordsFromGoogle.txt', 'utf8');
 const MOST_COMMON_10K_WORDS = commonWordsFile.toString().split('\n');
 
@@ -108,7 +110,7 @@ const getAllPhrases = (agentSummary) => {
   return allPhrases;
 };
 
-module.exports = (agentSummary, blacklist, removeCommonWords = true) => {
+module.exports.generateSpeechContext = (agentSummary, blacklist, removeCommonWords = true) => {
   const allPhrases = getAllPhrases(agentSummary);
 
   const words = [];
@@ -132,13 +134,13 @@ module.exports = (agentSummary, blacklist, removeCommonWords = true) => {
 
   const isNotBlacklisted = word => !blacklistSet.has(word);
   const isNotAcronym = word => !acronymsSet.has(word);
-  let chosenWords = words.filter(isNotExcluded).filter(isNotAcronym);
+  let chosenWords = words.filter(isNotBlacklisted).filter(isNotAcronym);
   if (removeCommonWords) {
     chosenWords = chosenWords.filter(word => !commonSet.has(word));
   }
 
   const chosenPhrases = phrases.filter((phrase) => {
-    let keep = !blacklistSet.contains(phrase) && phrase.length < CHAR_COUNT_PER_PHRASE_LIMIT;
+    let keep = !blacklistSet.has(phrase) && phrase.length < CHAR_COUNT_PER_PHRASE_LIMIT;
     if (removeCommonWords) {
       const wordsInPhrase = phrase.split(' ');
       const containsRareWord = !wordsInPhrase.every(word => commonSet.has(word));
