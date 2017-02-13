@@ -7,8 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
-    "node" : ">=7"
+    "node": ">=7"
   },
   "author": "Max Heinritz",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "api-ai-agent-downloader": "0.0.1"
+  }
 }

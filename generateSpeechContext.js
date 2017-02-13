@@ -1,17 +1,8 @@
-const fs = require('fs');
-
-
 // Google Cloud Speech API context limits.
 // https://cloud.google.com/speech/limits#content
 const CHAR_COUNT_LIMIT = 10000;
 const PHRASES_LIMIT = 500;
 const CHAR_COUNT_PER_PHRASE_LIMIT = 100;
-
-
-// List of excluded words.
-const commonWordsFile = fs.readFileSync('./data/mostCommonWordsFromGoogle.txt', 'utf8');
-const commonWordsArray = commonWordsFile.toString().split('\n');
-const excludedWords = commonWordsArray.filter(word => !COMMON_WORD_WHITELIST.includes(word ));
 
 
 const ENTITY_REGEXP = /(^| )@([^ ]+)/g;
@@ -100,15 +91,22 @@ const ensureStringifiedCharCountWithinLimit = (array, limit) => {
   return array.slice(0, bestIndex);
 }
 
-module.exports = generateSpeechContext = (agentSummary) => {
+const getAllPhrases = (agentSummary) => {
   const entityPhrases = getEntityPhrases(agentSummary.entities);
   const intentPhrases = getIntentPhrases(agentSummary.intents);
+
   let allPhrases = entityPhrases.concat(intentPhrases);
-  allPhrases = allPhrases.filter(phrase => typeof phrase === 'string')
-  allPhrases = allPhrases.map(phrase => phrase.toLowerCase())
+  allPhrases = allPhrases.filter(phrase => typeof phrase === 'string');
+  allPhrases = allPhrases.map(phrase => phrase.toLowerCase());
   allPhrases = removeNonWords(allPhrases);
   allPhrases = removeTooLong(allPhrases, 100);
   allPhrases = deduplicate(allPhrases);
+
+  return allPhrases;
+};
+
+module.exports = generateSpeechContext = (agentSummary, blacklist) => {
+  const allPhrases = getAllPhrases(agentSummary);
 
   const words = [];
   const acronyms = [];  // e.g. 'f o o b a r'
@@ -125,16 +123,17 @@ module.exports = generateSpeechContext = (agentSummary) => {
 
   const collapsedAcronyms = acronyms.map(acronym => acronym.replace(/ /g, ''));
   const acronymsSet = new Set(collapsedAcronyms);
+  const blacklistSet = new Set(blacklist);
 
   // Remove common words and acronyms.
-  const isNonExcluded = word => !EXCLUDED_WORDS_SET.has(word);
+  const isNotExcluded = word => !blacklistSet.has(word);
   const isNotAcronym = word => !acronymsSet.has(word);
-  const chosenWords = words.filter(isNonExcluded).filter(isNotAcronym);
+  const chosenWords = words.filter(isNotExcluded).filter(isNotAcronym);
 
   // Remove phrases that contain only excluded words.
   const chosenPhrases = phrases.filter((phrase) => {
     const wordsInPhrase = phrase.split(' ');
-    const isExcluded = word => EXCLUDED_WORDS_SET.has(word);
+    const isExcluded = word => blacklistSet.has(word);
     return !wordsInPhrase.every(isExcluded) && phrase.length < CHAR_COUNT_PER_PHRASE_LIMIT;
   });
 
