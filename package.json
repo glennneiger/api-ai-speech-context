@@ -1,6 +1,6 @@
 {
   "name": "api-ai-speech-context  ",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Generates a Google Cloud Speech API SpeechContext for an API.AI agent.",
   "main": "index.js",
   "engines": {
