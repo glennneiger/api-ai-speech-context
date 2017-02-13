@@ -9,10 +9,10 @@ for your
 
 `generateSpeechContext` takes two parameters:
 
-  - `summary`: An API.AI agent summary object with the keys `name`, `entities`, and `intents`.*
+  - `summary`: An API.AI agent summary object with the keys `name`, `entities`, and `intents`.
   - `blacklist`: An array of words to blacklist from the context.
 
-* as produced by [`api-ai-agent-downloader`](https://www.npmjs.com/package/api-ai-agent-downloader).
+The summary can be created with [`api-ai-agent-downloader`](https://www.npmjs.com/package/api-ai-agent-downloader).
 
 It returns an array containing words and phrases based on your agent's entities and intents.
 Non-blacklisted single words are given highest priority, then phrases that contain at least one
