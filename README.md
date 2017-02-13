@@ -15,8 +15,8 @@ for your
 The summary can be created with [`api-ai-agent-downloader`](https://www.npmjs.com/package/api-ai-agent-downloader).
 
 It returns an array containing words and phrases based on your agent's entities and intents.
-Non-blacklisted single words are given highest priority, then phrases that contain at least one
-non-blacklisted word. Entities within intent templates (e.g. '@sys.any') are removed.
+Non-blacklisted single words are given highest priority.
+Entities within intent templates (e.g. '@sys.any') are removed.
 
 The array comports with the Google Cloud Speech API's SpeechContext
 [usage limits](https://cloud.google.com/speech/limits#content).
